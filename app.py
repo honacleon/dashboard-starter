@@ -104,6 +104,162 @@ def generate_fake_data():
     
     return df_vendas, produtos, vendas_produtos, vendedores, transacoes
 
+def generate_chat_history():
+    """Gera histórico de chat pré-populado para demonstração"""
+    chat_history = [
+        {
+            'type': 'user',
+            'message': 'Qual foi a performance das vendas no último trimestre?',
+            'timestamp': '14:32',
+            'avatar': '👤'
+        },
+        {
+            'type': 'ai',
+            'message': '📊 **Análise Q4 2024**: Tivemos um excelente trimestre! As vendas cresceram **22,8%** vs trimestre anterior, totalizando **R$ 27,3M**. O **Aurum Premium** foi nosso destaque com 35% do volume total. A região **Sudeste** manteve a liderança com 45% das vendas. Posso detalhar algum aspecto específico?',
+            'timestamp': '14:32',
+            'avatar': '🤖'
+        },
+        {
+            'type': 'user',
+            'message': 'Como está nossa taxa de conversão comparado com a média do mercado?',
+            'timestamp': '14:35',
+            'avatar': '👤'
+        },
+        {
+            'type': 'ai',
+            'message': '🎯 **Taxa de Conversão Aurum**: Atualmente estamos com **14,8%**, que é **78% superior** à média do mercado (8,3%). Nos últimos 6 meses, mantivemos crescimento constante:\n\n• Jan: 12,1%\n• Fev: 12,8% \n• Mar: 13,2%\n• Abr: 13,9%\n• Mai: 14,3%\n• Jun: 14,8%\n\nNosso funil otimizado e time comercial têm sido os principais drivers desse resultado! 🚀',
+            'timestamp': '14:35',
+            'avatar': '🤖'
+        },
+        {
+            'type': 'user',
+            'message': 'Preciso de insights sobre os KPIs mais importantes para apresentar na board',
+            'timestamp': '14:38',
+            'avatar': '👤'
+        },
+        {
+            'type': 'ai',
+            'message': '📈 **TOP KPIs para Board Meeting**:\n\n🏆 **Receita Total**: R$ 12,5M (+8,5% MoM)\n💰 **Margem Bruta**: 34,8% (acima da meta de 32%)\n👥 **CAC Payback**: 8,2 meses (meta: <12 meses)\n🔄 **Churn Rate**: 3,2% (melhor da categoria)\n⚡ **NPS Score**: 78 (zona de excelência)\n\n**Highlights**: Crescimento orgânico de 65%, expansão para 3 novos mercados e time de vendas 127% acima da meta. Recomendo focar na **margem** e **eficiência operacional** como diferencial competitivo.',
+            'timestamp': '14:38',
+            'avatar': '🤖'
+        }
+    ]
+    return chat_history
+
+def create_chat_message(message_data):
+    """Cria uma bolha de mensagem do chat"""
+    colors = get_theme_colors()
+    is_user = message_data['type'] == 'user'
+    
+    # Cores baseadas no tema atual
+    if is_user:
+        bg_color = colors['primary']
+        text_color = '#FFFFFF'
+        align = 'right'
+        margin = 'margin-left: 80px; margin-right: 10px;'
+    else:
+        if st.session_state.theme == 'neon':
+            bg_color = 'linear-gradient(135deg, rgba(0, 255, 255, 0.2) 0%, rgba(255, 20, 147, 0.2) 100%)'
+            text_color = '#FFFFFF'
+        elif st.session_state.theme == 'glass':
+            bg_color = 'linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(99, 102, 241, 0.2) 100%)'
+            text_color = '#FFFFFF'
+        else:  # pastel
+            bg_color = 'linear-gradient(135deg, rgba(135, 206, 235, 0.2) 0%, rgba(152, 251, 152, 0.2) 100%)'
+            text_color = '#FFFFFF'
+        align = 'left'
+        margin = 'margin-right: 80px; margin-left: 10px;'
+    
+    st.markdown(f"""
+    <div style="display: flex; justify-content: {align}; margin-bottom: 15px;">
+        <div style="max-width: 75%; {margin}">
+            <div style="display: flex; align-items: flex-start; {'flex-direction: row-reverse;' if is_user else ''}">
+                <div style="{'margin-left: 10px;' if is_user else 'margin-right: 10px;'} margin-top: 5px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; 
+                                background: {'linear-gradient(135deg, ' + colors['primary'] + ', ' + colors['secondary'] + ')' if is_user else 'linear-gradient(135deg, ' + colors['accent'] + ', ' + colors['primary'] + ')'};
+                                display: flex; align-items: center; justify-content: center;
+                                font-size: 18px; border: 2px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                        {message_data['avatar']}
+                    </div>
+                </div>
+                <div style="{'background: linear-gradient(135deg, ' + colors['primary'] + ', ' + colors['secondary'] + ');' if is_user else 'background: ' + bg_color + ';'}
+                            color: {text_color}; padding: 12px 18px; border-radius: 18px;
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.1); backdrop-filter: blur(10px);
+                            {'border-top-right-radius: 5px;' if is_user else 'border-top-left-radius: 5px;'}">
+                    <div style="font-size: 14px; line-height: 1.4; font-weight: {'500' if is_user else '400'};">
+                        {message_data['message']}
+                    </div>
+                    <div style="font-size: 11px; opacity: 0.7; margin-top: 6px; text-align: {'right' if is_user else 'left'};">
+                        {message_data['timestamp']}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def create_typing_indicator():
+    """Cria indicador de digitação do AI"""
+    colors = get_theme_colors()
+    
+    st.markdown(f"""
+    <div style="display: flex; justify-content: left; margin-bottom: 15px;">
+        <div style="max-width: 75%; margin-right: 80px; margin-left: 10px;">
+            <div style="display: flex; align-items: flex-start;">
+                <div style="margin-right: 10px; margin-top: 5px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; 
+                                background: linear-gradient(135deg, {colors['accent']}, {colors['primary']});
+                                display: flex; align-items: center; justify-content: center;
+                                font-size: 18px; border: 2px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                        🤖
+                    </div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(135, 206, 235, 0.2) 0%, rgba(152, 251, 152, 0.2) 100%);
+                            color: #FFFFFF; padding: 12px 18px; border-radius: 18px;
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.1); backdrop-filter: blur(10px);
+                            border-top-left-radius: 5px;">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <div style="width: 8px; height: 8px; background: #FFFFFF; border-radius: 50%; 
+                                    animation: pulse 1.4s ease-in-out infinite;"></div>
+                        <div style="width: 8px; height: 8px; background: #FFFFFF; border-radius: 50%; 
+                                    animation: pulse 1.4s ease-in-out infinite; animation-delay: 0.2s;"></div>
+                        <div style="width: 8px; height: 8px; background: #FFFFFF; border-radius: 50%; 
+                                    animation: pulse 1.4s ease-in-out infinite; animation-delay: 0.4s;"></div>
+                        <span style="margin-left: 8px; font-size: 12px; opacity: 0.9; color: #FFFFFF; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">IA Aurum está pensando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+    @keyframes pulse {{
+        0%, 60%, 100% {{ transform: scale(1); opacity: 1; }}
+        30% {{ transform: scale(1.2); opacity: 0.7; }}
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+def create_quick_suggestions():
+    """Cria sugestões rápidas de perguntas"""
+    colors = get_theme_colors()
+    suggestions = [
+        "📊 Análise de performance trimestral",
+        "🎯 Comparativo de metas vs realizados", 
+        "👥 Insights sobre satisfação do cliente",
+        "💰 Projeção de receita para Q1",
+        "🚀 Oportunidades de crescimento",
+        "📈 Tendências do mercado atual"
+    ]
+    
+    st.markdown(f"<h4 style='color: {colors['primary']}; margin-bottom: 15px;'>💡 Perguntas Populares</h4>", unsafe_allow_html=True)
+    
+    cols = st.columns(2)
+    for i, suggestion in enumerate(suggestions):
+        with cols[i % 2]:
+            if st.button(suggestion, key=f"suggest_{i}", use_container_width=True):
+                st.session_state['new_message'] = suggestion
+                st.rerun()
+
 def inject_theme_css():
     colors = get_theme_colors()
     
@@ -1039,8 +1195,8 @@ def main():
     # Navegação
     menu = option_menu(
         menu_title=None,
-        options=["📊 Overview", "💰 Vendas", "👥 Clientes", "⚙️ Operacional"],
-        icons=["graph-up", "currency-dollar", "people", "gear"],
+        options=["📊 Overview", "💰 Vendas", "👥 Clientes", "⚙️ Operacional", "🤖 IA Chatbot"],
+        icons=["graph-up", "currency-dollar", "people", "gear", "robot"],
         default_index=0,
         orientation="horizontal",
         styles={
@@ -1367,6 +1523,130 @@ def main():
             st.markdown(f"<h4 class='section-header'>👥 Funcionários por Unidade</h4>", unsafe_allow_html=True)
             df_funcionarios = df_infra[['Local', 'Funcionarios', 'Tipo']].sort_values('Funcionarios', ascending=False)
             st.dataframe(df_funcionarios, use_container_width=True, hide_index=True)
+    
+    elif menu == "🤖 IA Chatbot":
+        colors = get_theme_colors()
+        
+        st.markdown("<h2 class='section-header'>🤖 Assistente IA Aurum</h2>", unsafe_allow_html=True)
+        
+        # Header do chat com status
+        col1, col2, col3 = st.columns([2, 1, 1])
+        
+        with col1:
+            st.markdown(f"""
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="width: 50px; height: 50px; border-radius: 50%; 
+                            background: linear-gradient(135deg, {colors['accent']}, {colors['primary']});
+                            display: flex; align-items: center; justify-content: center;
+                            font-size: 24px; margin-right: 15px; border: 3px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    🤖
+                </div>
+                <div>
+                    <h3 style="margin: 0; color: {colors['primary']}; font-weight: bold;">IA Aurum Business</h3>
+                    <p style="margin: 0; color: {colors['text']}; opacity: 0.8; font-size: 14px;">Seu assistente inteligente para análises e insights</p>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.metric("🟢 Status", "Online", "Ativo")
+        
+        with col3:
+            st.metric("⚡ Tempo Resposta", "< 1s", "Otimizado")
+        
+        st.markdown("---")
+        
+        # Container do chat
+        chat_container = st.container()
+        
+        # Área de histórico do chat
+        with chat_container:
+            # Exibir histórico de mensagens
+            chat_history = generate_chat_history()
+            for message in chat_history:
+                create_chat_message(message)
+            
+            # Simular que a IA está online - indicador de status
+            st.markdown(f"""
+            <div style="display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                <div style="width: 8px; height: 8px; background: #00FF00; border-radius: 50%; margin-right: 8px;
+                            animation: pulse 2s ease-in-out infinite;"></div>
+                <span style="color: {colors['text']}; font-size: 12px; opacity: 0.7;">IA Aurum está online e pronta para ajudar</span>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Área de input de mensagem
+        st.markdown(f"<h4 style='color: {colors['primary']}; margin-bottom: 15px;'>💬 Digite sua pergunta</h4>", unsafe_allow_html=True)
+        
+        with st.form("chat_form", clear_on_submit=True):
+            col_input, col_send = st.columns([4, 1])
+            
+            with col_input:
+                user_input = st.text_input(
+                    "Mensagem", 
+                    placeholder="Ex: Como estão nossas vendas este mês? Quais insights você pode me dar sobre performance?",
+                    label_visibility="collapsed"
+                )
+            
+            with col_send:
+                submitted = st.form_submit_button("📤 Enviar", type="primary", use_container_width=True)
+            
+            if submitted and user_input.strip():
+                # Simular adição de nova mensagem - apenas demonstrativo
+                st.success("✨ Mensagem enviada! Em uma versão real, aqui a IA responderia com insights personalizados baseados nos seus dados.")
+                
+                # Simular resposta da IA
+                with st.expander("🤖 **Prévia da Resposta da IA**", expanded=True):
+                    st.markdown(f"""
+                    **Sua pergunta:** "{user_input}"
+                    
+                    **Resposta IA Aurum:** 
+                    
+                    📊 Baseado nos dados do seu dashboard, posso analisar que:
+                    • Receita atual: **R$ 12,5M** (+8,5% vs mês anterior)
+                    • Performance acima da média do mercado
+                    • Oportunidades identificadas no segmento premium
+                    • Recomendo focar em **{random.choice(['retenção de clientes', 'expansão geográfica', 'novos produtos', 'otimização de custos'])}**
+                    
+                    *Esta é uma demonstração. Na versão real, a IA analisaria seus dados específicos para fornecer insights precisos e personalizados.*
+                    """)
+        
+        # Sugestões rápidas
+        st.markdown("<br>", unsafe_allow_html=True)
+        create_quick_suggestions()
+        
+        # Recursos da IA
+        st.markdown("---")
+        st.markdown(f"<h4 style='color: {colors['primary']}; margin-bottom: 15px;'>🚀 Capacidades da IA Aurum</h4>", unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown(f"""
+            <div style="padding: 20px; background: {'linear-gradient(135deg, rgba(0,255,255,0.1) 0%, rgba(255,20,147,0.1) 100%)' if st.session_state.theme == 'neon' else 'linear-gradient(135deg, rgba(135,206,235,0.15) 0%, rgba(152,251,152,0.15) 100%)'};
+                        border-radius: 15px; border: 1px solid {colors['primary']}; text-align: center;">
+                <h3 style="color: {colors['primary']};">📊 Análise de Dados</h3>
+                <p style="color: #FFFFFF; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">Interpretação inteligente de KPIs, métricas e tendências do seu negócio</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div style="padding: 20px; background: {'linear-gradient(135deg, rgba(0,255,255,0.1) 0%, rgba(255,20,147,0.1) 100%)' if st.session_state.theme == 'neon' else 'linear-gradient(135deg, rgba(135,206,235,0.15) 0%, rgba(152,251,152,0.15) 100%)'};
+                        border-radius: 15px; border: 1px solid {colors['secondary']}; text-align: center;">
+                <h3 style="color: {colors['secondary']};">🎯 Insights Estratégicos</h3>
+                <p style="color: #FFFFFF; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">Recomendações personalizadas baseadas em padrões e benchmarks do mercado</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown(f"""
+            <div style="padding: 20px; background: {'linear-gradient(135deg, rgba(0,255,255,0.1) 0%, rgba(255,20,147,0.1) 100%)' if st.session_state.theme == 'neon' else 'linear-gradient(135deg, rgba(135,206,235,0.15) 0%, rgba(152,251,152,0.15) 100%)'};
+                        border-radius: 15px; border: 1px solid {colors['accent']}; text-align: center;">
+                <h3 style="color: {colors['accent']};">⚡ Respostas Rápidas</h3>
+                <p style="color: #FFFFFF; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">Suporte 24/7 para dúvidas sobre performance, metas e oportunidades</p>
+            </div>
+            """, unsafe_allow_html=True)
     
     # Call-to-Actions no final
     st.markdown("---")
